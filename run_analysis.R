@@ -187,20 +187,46 @@ trainY <- function() {
   readY(trainDir())
 }
 
+#
+# Get and Clean UCI HAR Dataset. Data will be
+# written to the current working directory.
+# The raw data will be found in the directory "UCI HAR Dataset".
+# X (input) and y (activity labels) will be in Xy.csv.
+# The mean of all metrics by activity will be found in
+# activitySummary.csv.
+#
+# All necessary libraries will be loaded, if the packages
+# have been installed.  If the necessary packages do not
+# exist, the script will stop and print a message indicating
+# which package was missing.
+#
 getCleanUciHarDataset <- function() {
+  # Ensure that necessary libraries have been loaded.
   ensureLibraries()
+  # Download raw data.
   downloadAndUnzip()
+  # Load X test input data into table.
   testXData <- testX()
+  # Load X train input data into table.
   trainXData <- trainX()
+  # Load y test activity labels into table.
   testyData <- testY()
+  # Load y train activity labels into table.
   trainyData <- trainY()
+  # Combine test and train inputs
   XData <- rbind(testXData, trainXData)
+  # Combine test and train activity labels
   yData <- rbind(testyData, trainyData)
-  write.csv(XData, "X.csv", row.names = FALSE)
-  write.csv(yData, file = "y.csv", row.names = FALSE)
-  
-  activitySummary <- mutate(XData, activity=yData$activity) %>%
-    group_by(activity) %>%
+  # Combine inputs and activity labels. Relocate activity
+  # after subject id.
+  XyData <- mutate(XData, activity=yData$activity) %>%
+    relocate(activity, .after=subjectid)
+  # Generate a csv file for Xy data
+  write.csv(XyData, "Xy.csv", row.names = FALSE)
+
+  # Construct an activity summary
+  activitySummary <- group_by(XyData, activity) %>%
     summarize_at(vars(!subjectid), mean)
+  # Generate a csv file for activity summary.
   write.csv(activitySummary, "activitySummary.csv", row.names = FALSE)
 }
