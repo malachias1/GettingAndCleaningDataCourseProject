@@ -7,7 +7,8 @@ To retrieve and build the dataset, source run_analysis.R and then run the
 getCleanUciHarDataset() function. The script requires the data.table and
 dplyr libraries. These libraries are loaded by the script if necessary.
 If either library is unavailable, the script will stop and print a message
-telling you which library is missing.
+telling you which library is missing. All generated files and directories will be 
+written to the current working directory.
 
 After running the script, you will have a tidy dataset in Xy.csv, consisting of 
 subject id, activity label, and multiple input metrics for the mean and
