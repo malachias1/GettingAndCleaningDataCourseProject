@@ -192,7 +192,7 @@ trainY <- function() {
 # written to the current working directory.
 # The raw data will be found in the directory "UCI HAR Dataset".
 # X (input) and y (activity labels) will be in Xy.csv.
-# The mean of all metrics by activity will be found in
+# The mean of all metrics by activity and subject will be found in
 # activitySummary.csv.
 #
 # All necessary libraries will be loaded, if the packages
@@ -225,8 +225,9 @@ getCleanUciHarDataset <- function() {
   write.csv(XyData, "Xy.csv", row.names = FALSE)
 
   # Construct an activity summary
-  activitySummary <- group_by(XyData, activity) %>%
-    summarize_at(vars(!subjectid), mean)
+  activitySummary <- XyData %>% 
+    group_by(activity, subjectid) %>% 
+    summarise_all(mean)
   # Generate a csv file for activity summary.
   write.csv(activitySummary, "activitySummary.csv", row.names = FALSE)
 }
